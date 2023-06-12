@@ -1,4 +1,4 @@
-# casio-mern-app
+# Demo application for Azure container apps
 
 # Project motivations 
 I wanted to try this project to continue building off the skills I have learned while exploring web development. I intend to use this project as a test application when running kubernetes, and container technologies from azure and AWS.
