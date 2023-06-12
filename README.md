@@ -92,3 +92,8 @@ if done correctly, you should be able to see the following image
 The CI/CD setup for this project is very simple. the Application will get built when you commit to the main branch. This can be from a direct commit, or a merge into the main branch. the CD portion is a manually triggered pipeline, you can check whether or not you're going to deploy the frontend, backend, or both. 
 
 There is a blank pipeline present, i'm working on learning to write unit + integration tests with Jest. Eventually, I'll write the testing pipeline to run those tests on every commit.
+
+**NOTE: if you want to use CI/CD the following secrets need to be added: 
+    - ACR_USERNAME
+    - ACR_PASSWORD
+    - AZURE_CREDENTIALS
