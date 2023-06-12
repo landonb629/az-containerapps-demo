@@ -1,0 +1,47 @@
+name: CI pipeline 
+on: 
+  push:
+    branches:
+      - "main"
+
+jobs:
+  build_job:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3 
+    
+    - name: first 10 in SHA
+      id: tag
+      run : | 
+        echo "sha=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+    - name: find out which path changed
+      uses: dorny/paths-filter@v2
+      id: filter 
+      with: 
+        filters: | 
+          frontend: 
+            - "frontend/**"
+          backend:
+            - "backend/**"
+    
+    - name: login to azure container registry
+      uses: azure/docker-login@v1
+      with: 
+        login-server: casinomernregistry.azurecr.io
+        username: ${{secrets.ACR_USERNAME}}
+        password: ${{secrets.ACR_PASSWORD}}
+
+    - name: build and push frontend
+      if: steps.filter.outputs.frontend == 'true'
+      run: | 
+        cd ./frontend
+        docker build -t casinomernregistry.azurecr.io/frontend:${{steps.tag.outputs.sha}} -f Dockerfile.prod .
+        docker push casinomernregistry.azurecr.io/frontend:${{steps.tag.outputs.sha }} 
+    
+    - name: build and push backend
+      if: steps.filter.outputs.backend == 'true'
+      run: | 
+        cd ./backend
+        docker build -t casinomernregistry.azurecr.io/backend:${{ steps.tag.outputs.sha }} -f Dockerfile.prod .
+        docker push casinomernregistry.azurecr.io/backend:${{steps.tag.outputs.sha}} 

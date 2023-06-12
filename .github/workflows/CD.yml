@@ -1,0 +1,53 @@
+name: CD pipeline 
+on: 
+  workflow_dispatch:
+    inputs:
+      deploy_frontend:
+        type: boolean
+        description: to deploy frontend
+        default: false
+      deploy_backend:
+        type: boolean
+        description: to deploy backend
+        default: false
+
+jobs:
+  deploy_code:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: findout which path changed 
+      uses: dorny/paths-filter@v2
+      id: filter
+      with:
+        filters: | 
+          frontend: 
+            - "frontend/**"
+          backend:
+            - "backend/**"
+    
+    - name: first 10 in SHA
+      id: tag
+      run: | 
+        echo "sha=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+    - name: login to azure 
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: deploy frontend
+      if: github.event.inputs.deploy_frontend == 'true'
+      uses: azure/container-apps-deploy-action@v1 
+      with:
+        acrName: casinomernregistry
+        containerAppName: casino-frontend
+        resourceGroup: casino-mern-app
+        imageToDeploy: casinomernregistry.azurecr.io/frontend:${{steps.tag.outputs.sha}}
+        
+    
+    - name: deploy backend
+      if: github.event.inputs.deploy_backend == 'true'
+      run: | 
+        echo "deploying code for frontend"
