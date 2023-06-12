@@ -16,10 +16,10 @@ The motivation behind this project came from reading a reddit post. This post ta
 I plan on hosting this application on Azure container apps.
 
 Tech stack: 
-- Azure container apps 
-- Github Actions 
-- CosmosDB
-- Terraform 
+- Azure container apps (Compute)
+- Github Actions (CI/CD)
+- CosmosDB (DB)
+- Terraform (IaC) 
 
 ##  the local dev environment 
 
