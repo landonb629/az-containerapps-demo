@@ -1,0 +1,43 @@
+version: '3'
+services:
+  app:
+    build:
+      context: ./backend
+    command: npm start
+    ports: 
+      - 3032:3032
+    volumes:
+      - type: bind 
+        source: ./backend
+        target: /usr/src/app
+    environment:
+      - NODE_ENV=development
+      - REACT_APP_API_ENDPOINT=http://localhost:3032
+    depends_on:
+      - db
+    
+  db:
+    image: mongo
+    command: mongod --quiet --logpath /dev/null
+    expose: 
+      - 27017
+    volumes:
+      - type: volume
+        source: mongo-db
+        target: /data/db 
+  
+  frontend:
+    build:
+      context: ./frontend
+    command: npm start 
+    ports: 
+      - 3000:3000
+    volumes:
+      - type: bind 
+        source: ./frontend
+        target: /usr/src/app
+    environment:
+      - NODE_ENV=development
+    
+volumes:
+  mongo-db:
